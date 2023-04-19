@@ -75,7 +75,7 @@ class Solution2 {
         for (String gen : genSort) {
             ArrayList<int[]> detail = detailMap.get(gen);
             Collections.sort(detailMap.get(gen), (e1, e2) ->
-                Integer.valueOf(e2[1]).compareTo(Integer.valueOf(e1[1]))
+                Integer.compare(e2[1], e1[1])
             );
             int count = 0;
             for (int[] de : detail) {
