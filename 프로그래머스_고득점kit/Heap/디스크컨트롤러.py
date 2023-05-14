@@ -32,7 +32,6 @@ def solution(jobs):
 
 import heapq
 from collections import deque
-
 def solution(jobs):
     que = []
     length = len(jobs)
@@ -51,4 +50,38 @@ def solution(jobs):
             heapq.heappush(que, job_que.popleft())
         if not que and job_que: # 실행 큐 비었는데 대기열에 존재 시(현재 시간 이후 요청 -> now = req+dur)
             heapq.heappush(que, job_que.popleft())
+    return total // length
+
+import heapq
+from collections import deque
+# 아무 작업도 하지 않을 때는 먼저 들어온 애 바로 실행됨(스케줄링X)
+def solution(jobs):
+    que = [] # 실행 큐
+    exe = deque(sorted([(y, x) for x, y in jobs], key=lambda x: (x[1],x[0]))) # 나열 후 정렬이 포인트!!! 순서 헷갈리니 주의 (요구,소요)나열 후, (소요,요구)정렬
+    # 대기 큐 -> 요청 시간 빠른 애부터 일단 넣어/ FIFO -> 큐 비면 실행 끝
+    # 일단 실행하려는 차에, 겹치면 소요 더 적은 애 넣어
+    # 요청, 소요, 현재 시간(앞 task 끝) 필요
+    now = 0 # 앞의 작업 끝난 시점
+    total = 0 # 평균 내기 전 (작업 끝-요구) 전체 시간
+    # 현재 아무 것도 하지 않는 초기 상태 -> 1번 요청 작업 바로 실행
+    # 이후 대기 큐에서 스케줄링(겹치면 소요 더 작은 애 먼저 실행 -> 최소 큐)
+    heapq.heappush(que, exe.popleft()) # 소요, 요구
+    length = len(jobs)
+    while que:
+        dur, req = heapq.heappop(que) # 실행
+        # 비어있을 때 새 작업이 오기까지 기다린 시간(req) + 소요(dur)
+        # 작업 겹친다면 req 기다리는 게 아니라, 바로 실행되기 때문에 +dur만
+        # 이전 작업 끝, 현재 요청 시점 비교
+        if now <= req: # req가 나중. 겹치지 않고 바로 실행
+            now = req + dur # 이 작업 요청이 들어오기까지 기다림 + dur
+            total += dur # 소요 시간만큼만 기다림(dur=now-req)
+        else: # 작업 겹침
+            now += dur # 이전 작업 끝나면 바로. 수행. 현재 작업 끝
+            total += now - req # 현재 작업의 끝- 요구 시점
+        # 실행할 일 남았고, 요구 시점이 이전이거나 현재와 "같음" -> 스케줄링 대상("둘 다 선택할 수 있기 때문에!!!!!!")
+        while exe and exe[0][1] <= now:
+            heapq.heappush(que, exe.popleft())
+        if not que and exe:
+            # 현재 시점에는 요청된 일이 없지만, 나중에 들어올 작업 있을 경우
+            heapq.heappush(que, exe.popleft()) # 아무것도 실행x -> fifo실행
     return total // length
