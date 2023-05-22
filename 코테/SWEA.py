@@ -36,17 +36,14 @@ for T in range(1, tc+1):
                 right += 1
                 
     for cost, left, right in stack:
-        if not dp:
-            dp.append((cost, right))
+        last_cost = -1
+        # 내 left 이전의 right. 그 중 max val 가지는 애 찾아서 더해라
+        for i in range(len(dp)-1, -1, -1):
+            if dp[i][1] < left:
+                last_cost = max(dp[i][0], last_cost)
+        if last_cost != -1:
+            dp.append((cost+last_cost, right))
         else:
-            last_cost = -1
-            # 내 left 이전의 right. 그 중 max val 가지는 애 찾아서 더해라
-            for i in range(len(dp)-1, -1, -1):
-                if dp[i][1] < left:
-                    last_cost = max(dp[i][0], last_cost)
-            if last_cost != -1:
-                dp.append((cost+last_cost, right))
-            else:
-                dp.append((cost, right))
+            dp.append((cost, right))
     sell = max(dp) if dp else 0
     print("#"+str(T), sell)
