@@ -31,7 +31,34 @@ dur_cost = list(map(int, input().split()) for _ in range(n))
 dp = [0]*(n+1) # i번째 상담하거나, 안 하거나
 for i in range(n):
     dur, cost = dur_cost[i]
+    # dp[i+dur] : i번째 연산하지 않고 넘어갈 때랑, 누적 최대랑 비교
     dp[i+1] = max(dp[i+1], dp[i]) # i번째 연산하지 않고 넘어갈 때
     if i+dur <= n: # i번째 연산 수행
         dp[i+dur] = max(dp[i+dur], dp[i]+cost)
 print(max(dp))
+
+# 메모리 효율, 시간 효율 배열 2개 쪼개는 것이 나음
+'''
+from sys import stdin
+
+input = stdin.readline
+n = int(input())
+
+t, p = [], []
+dp = [0 for _ in range(n+1)] #n+1일까지의 최대 수익
+
+for _ in range(n):
+    ti, pi = map(int, input().split())
+    t.append(ti)
+    p.append(pi)
+
+m = 0 #현재까지의 최대 수익
+for i in range(n):
+    m = max(m, dp[i]) #이미 누적돼 있을 경우 비교
+    if i + t[i] > n: continue #n일 넘기면 누적x
+    #현재 강의 선택 시 다음 강의에 영향을 줌 다음 강의가 이미 큰 경우 현재 선택x
+    dp[i+t[i]] = max(m+p[i], dp[i+t[i]])
+
+print(max(dp))
+
+'''
