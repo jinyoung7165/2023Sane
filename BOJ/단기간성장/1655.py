@@ -12,8 +12,7 @@ rightHeap의 root~모든 노드가 left의 root보다 크도록 구성(minHeap)
 일단, leftHeap과 rightHeap 길이 최대한 맞추는 방식으로 삽입
 leftHeap과 rightHeap의 길이 같다면, 중간값의 기준이 되는 left에 넣기
 길이 다르면, left길이와 맞추기 위해 right에 삽입 
-아후, leftHeap의 root가 rightHeap의 root보다 크면, leftHeap과 rightHeap의 root 바꾸기
-
+이후, leftHeap의 root가 rightHeap의 root보다 크면, leftHeap과 rightHeap의 root 바꾸기
 1->1 
 1 5 -> 1
 12 5 -> 2
@@ -22,8 +21,7 @@ leftHeap과 rightHeap의 길이 같다면, 중간값의 기준이 되는 left에
 -99,1,2, 5,7,10 -> 2
 -99,1,2,5, 5,7,10 -> 5 (leftHeap, rightHeap 길이 같다면 left에 삽입)
 '''
-# 매번 출력해야함 -> 정렬 반복 시 시간 초과
-# leftHeap과 rightHeap 길이 같다면, 
+# 매번 출력해야함 -> 정렬 반복 시 시간 초과 -> HEAP 쓰자
 import heapq
 from sys import stdin
 left, right = [], []
