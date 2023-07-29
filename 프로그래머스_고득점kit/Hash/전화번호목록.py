@@ -40,3 +40,19 @@ def solution(phone_book):
                 return False
         dic[phone_number] = 1   
     return True
+
+
+def solution(phone_book):
+    answer = True
+    phone_book.sort()
+    last, last_len = '', 0
+    # 1234 1236 133 1344 191 이런 식으로 정렬될 것
+    for phone in phone_book:
+        if last:
+            if len(phone) > last_len:
+                if phone[:last_len] == last:
+                    answer = False
+                    break
+        last, last_len = phone, len(phone)
+            
+    return answer

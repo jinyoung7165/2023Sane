@@ -35,3 +35,23 @@ def solution2(numbers, target):
     else:
         answer = solution2(numbers[1:], target - numbers[0]) + solution2(numbers[1:], target + numbers[0])
         return answer
+
+# 슬라이싱하기 싫을 때    
+size, t, answer, nums = 0, 1, 0, None
+def dfs(depth, result):
+    global answer
+    if depth == size:
+        if result == t:
+            answer += 1
+        return
+    number = nums[depth]
+    dfs(depth+1, result + number)
+    dfs(depth+1, result - number)
+    
+def solution(numbers, target):
+    global size, t, nums
+    numbers.sort()
+    nums = numbers
+    t, size = target, len(numbers)
+    dfs(0, 0)
+    return answer
