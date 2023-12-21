@@ -9,6 +9,8 @@
 # => 2,5번의 순위만 정확히 알 수 있음 -> 2return
 # 가장 많이 진 애부터 탐색하며(리프 가능성) winners의 크기 증가시킴
 # 최대한 "길게 탐색"했을 때, 같은 level에 자기만 있으면 됨
+# 1~n 순회하며 해당 원소가 가진 것을 위로 전달, 아래로 전달하면 빠트릴 위험 없음
+# 방향성 비순환 ingress -> 무엇을 전파할지 잘 생각하자!!
 from collections import defaultdict
     
 def solution(n:int, results:list):

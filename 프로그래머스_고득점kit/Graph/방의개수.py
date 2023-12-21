@@ -28,3 +28,6 @@ def solution(arrows:list):
             x, y = nx, ny # 이동
                 
     return answer
+
+print(solution([1,4,6,0,3]))
+print(solution([1,4,6,0,3,6,1]))

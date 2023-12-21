@@ -44,32 +44,38 @@ print(solution(9, [[1,3],[2,3],[3,4],[4,5],[4,6],[4,7],[7,8],[7,9]]))
 
 '''
 union find
+루트 노드인 경우. uf배열에 -|집합 크기|(음수) 저장(find()시 자신=노드 번호 반환)
+자식 노드인 경우. 루트 노드 번호(양수) 저장(find()시 루트노드 찾아 반환)
+find 함수 -> 루트 노드 번호를 반환하는 것은 동일
+uf배열에는 다른 거 저장
 '''
 uf = []
 
 def find(a):
     global uf
-    if uf[a] < 0: return a
-    uf[a] = find(uf[a])
-    return uf[a]
+    if uf[a] < 0: return a # 본인이 parent
+    uf[a] = find(uf[a]) # 루트 노드 찾음
+    return uf[a] # 루트 반환(양수 a 혹은, 음수로 합집합 개수)
 
 def merge(a, b):
     global uf
     pa = find(a)
     pb = find(b)
-    if pa == pb: return
-    uf[pa] += uf[pb]
-    uf[pb] = pa
+    if pa == pb: return # 부모가 같음. 같은 집합.
+    uf[pa] += uf[pb] # 부모 다르면 합집합 (-)개수만큼 커짐(음수)
+    uf[pb] = pa # pa를 부모로 가리킴(양수). 루트 가리킴. merge
 
 def solution(n, wires):
     global uf
     answer = int(1e9)
     k = len(wires)
-    for i in range(k):
-        uf = [-1 for _ in range(n+1)]
+    for i in range(k): # 간선 모두 순회하며 i간선 끊음
+        uf = [-1 for _ in range(n+1)] # 부모 테이블 초기화. 모두 루트로서, -|집합크기1| 가짐
         tmp = [wires[x] for x in range(k) if x != i]
-        for a, b in tmp: merge(a, b)
-        v = [x for x in uf[1:] if x < 0]
-        answer = min(answer, abs(v[0]-v[1]))
+        for a, b in tmp: merge(a, b) # 간선 하나 제외하고 union find
+        v = [x for x in uf[1:] if x < 0] # 0노드 제외하고, 루트 노드만 모음. 최대 2개
+        # 루트 노드의 parent tb 값의 차 = 집합 노드 개수 차
+        # 음수만 넣음(: -해당 집합 내 원소 개수)
+        answer = min(answer, abs(v[0]-v[1])) # wires 트리 형식이라고 주어짐 -> 간선 하나 제거하면 반드시 루트 2개 나옴
 
     return answer

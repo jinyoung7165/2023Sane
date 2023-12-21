@@ -30,3 +30,25 @@ def solution_pq(priorities:list, location:int):
                 if i == location: # 원하던 위치까지 오면
                     return answer
                 heapq.heappop(que)
+                
+'''
+대기 큐에서 프로세스 꺼냄
+대기 큐 중 우선순위 더 높은 거 있으면, 꺼낸 거 다시 큐에 넣음
+[A,B,C,D] # 실행큐: 그냥 순서대로 온 큐
+[2,1,3,2] # 대기큐: 우선순위 큐
+실행큐에서 꺼냈는데 대기큐의 3이 더 큼 -> 실행큐에 넣음 [(3c,2d),(2a,1b)]
+[c,d,a,b] 순 실행
+location idx(0~)의 프로세스가 몇 번째(1~)에 실행되는지 return해라
+실행 큐, 대기 큐 -> 순회하며
+대기 큐의 우선 순위(최대)랑 같을 때, 실행큐에서 제거. 
+그렇지 않을 때 뒤에 다시 붙여가며 실행큐 계속 순회
+'''
+def solution(priorities:list, location:int):
+    seq = sorted(priorities)
+    idx = 1
+    while seq:
+        for i in range(len(priorities)):
+            if priorities[i] == seq[-1]:
+                if i == location: return idx
+                seq.pop()
+                idx += 1
