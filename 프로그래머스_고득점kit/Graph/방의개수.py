@@ -1,32 +1,24 @@
-# (0,0)에서 시작. 숫자가 적힌 방향으로 이동하며 선 그음
-# 그림 그릴 때, 사방 막히면 방 하나로 셈
-# 이동하는 방향이 담긴 배열 주어질 때, 방의 개수 return
-# 방은 다른 방으로 둘러 싸일 수 있음
+# (0,0)에서 시작. 숫자가 적힌 방향으로 이동하며 선 그음. 방의 개수 return
+# 방은 다른 방으로 둘러 싸일 수 있음(삼각형도 가능)
+# 점 재방문 시 확인 필요
+# maps 크기 주어지지 않음 -> 점 중심으로 dict[(x,y)]. 처음 map의 좌표를 2배 불가. 점 기준 이동을 2배씩
+# 도착점 기준으로 처음 온 출발점일 때(겹치지 않는 선분) => 방 개수 +1
+# (x,y->nx,ny) 겹치는 선분: (x,y->nx,ny) or (nx,ny->x,y)
 from collections import defaultdict
-
+dirs = [(0,-1),(1,-1),(1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1)] # 0~7
 def solution(arrows:list):
     answer = 0
-    move = [[-1,0],[-1,1],[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1]]
-    # arrows=선택할 move의 idx로 이뤄진 배열
-    maps = defaultdict(list)
+    maps = defaultdict(set)
     x, y = 0, 0
-    # 2배 map... 아마 그 문제
     for arr in arrows:
-        dx, dy = move[arr]
-        for _ in range(2): # 대각선을 위해 map두 배 칠함
-            nx, ny = x+dx, y+dy
-            # 다른 선분의 점끼리 만났을 때
-            # 다른 선분: 평행하지 않으면 됨(틀림. 꼭짓점 말고 같은 선분 안의 점이 만나 도형이 완성될 수 있음)
-            # 다른 선분: 갔다가 되돌아오는 한 직선만 아니면 됨
-            # 한 선분: (nx,ny)<-(x,y)경로로 방문했다는 뜻
-            if maps[(nx,ny)] and (x, y) not in maps[(nx,ny)]: # 완전 같은 경로로 선분 지날 때 무시
-                # 한 점에서 만나는데 다른 방향의 선인 경우 도형 생성
+        for _ in range(2): # 대각선을 위해 2배
+            nx, ny = x+dirs[arr][0], y+dirs[arr][1]
+            # 이미 존재하는 점이고, 완전 같은 선분이 아니라면 방 생성
+            if maps[(nx, ny)] and (x, y) not in maps[(nx, ny)]:
                 answer += 1
-            maps[(nx,ny)].append((x,y))
-            maps[(x,y)].append((nx, ny))
-            # 방향성 없는 선분이므로 양방향 연결
-            x, y = nx, ny # 이동
-                
+            maps[(nx, ny)].add((x, y))
+            maps[(x, y)].add((nx, ny))
+            x, y = nx, ny
     return answer
 
 print(solution([1,4,6,0,3]))

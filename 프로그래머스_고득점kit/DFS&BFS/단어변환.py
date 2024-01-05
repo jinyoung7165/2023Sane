@@ -9,27 +9,21 @@
 # 변환 불가 시 0 리턴
 # hit->cog, words=["hot","dot","dog","lot","log"]
 # 변환불가(words에 애초에 cog없음)=>0
-import heapq
-from collections import defaultdict
+from collections import deque
 def solution(begin, target, words):
     answer = 0
-    if target not in words:
-        return 0
-    que = []
     size = len(words)
-    visited  = defaultdict(size+1)# 각 words를 방문하기까지의 최소 거리
-    # 변환 수, 현재 단어, 사용한 word
-    heapq.heappush(que, (0, begin))
+    visited = [False] * size
+    if target not in words: return 0
+    que = deque([(begin, 0)])
     while que:
-        cost, cur = heapq.heappop(que)
-        if cur == target:
-            answer = cur
-            break
-        if visited[cur] < cost: # 더 최단거리로 방문한 경험 있으면
-            continue
-        visited[cur] = cost # 방문처리
-        for word in words:
-            diff = set(enumerate(cur))-set(enumerate(word))
-            if len(diff) == 1 and visited[word] == size+1: # 알파벳 1개 차이
-                heapq.heappush(que, (cost+1, word))
+        cur, cnt = que.popleft()
+        if cur == target: return cnt
+        for i in range(size):
+            if visited[i]: continue
+            diff = set(enumerate(cur)) - set(enumerate(words[i]))
+            if len(diff) == 1:
+                visited[i] = True
+                que.append((words[i], cnt+1))
+            
     return answer
