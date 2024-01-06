@@ -4,17 +4,14 @@
 # [1, 2, 3, 9, 10, 12], k=7
 # -> [5, 3, 9, 10, 12], [13, 9, 10, 12] => 2번
 import heapq
-from collections import deque
-def solution(scoville: list, K: int):
+def solution(scoville: list, k: int):
     answer = 0
     heapq.heapify(scoville)
     while scoville:
-        el1 = heapq.heappop(scoville)
-        if el1 < K:
-            if scoville:
-                el2 = heapq.heappop(scoville)
-                heapq.heappush(scoville, el1 + el2*2)
-                answer += 1
-            else: return -1
-        else: break
+        if len(scoville) == 1:
+            if scoville[0] < k: answer = -1
+            break
+        if scoville[0] >= k: break
+        answer += 1
+        heapq.heappush(scoville, heapq.heappop(scoville) + heapq.heappop(scoville)*2)
     return answer
