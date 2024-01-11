@@ -55,8 +55,8 @@ def heapSort(x):
             heapify(arr, largest, size) # 자식 idx level로 넘어감
             
     n = len(x)
-    # 최대 heap 생성
-    for i in range(n//2-1, -1, -1):
+    # 최대 heap 생성 -> 루트가 서브트리 노드보다 큼 보장
+    for i in range(n//2-1, -1, -1): # 맨마지막 원소의 루트부터 전달(n은 전체 노드 수)
         heapify(x, i, n)
     
     # root와 마지막 노드 swap후, 마지막 노드(제일 큰 수)빼고 heap화
