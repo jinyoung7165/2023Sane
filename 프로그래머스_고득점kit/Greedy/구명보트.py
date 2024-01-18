@@ -1,49 +1,20 @@
-# "최대 2명씩". 무게 제한
-# [70,50,80,50], limit 100 -> 2+4(100) 가능
-# 최대한 적은 move로 모두 구출 -> 3
-# [70,80,50], 100 -> 3(각각 따로)
-# 가장 큰 + 가장 작은 사람
-# [30,30,40,60], 90 -> (30+60),(30+40)
-def solution(people, limit):
-    answer = 0
-    people.sort()
-    s = 0
-    size = len(people)
-    visited = set()
-
-    for l in range(size): # 0~len-1
-        s = people[l]
-        visited.add(l)
-        for r in range(size-1, l, -1): # len-1~l+1
-            if r not in visited:
-                tmp = s + people[r]
-                if tmp <= limit: # 싣기
-                    s += people[r]
-                    visited.add(r)
-                    break
-        if s == people[l]: # l 자신
-            answer += 1
-    return answer
-
-# 최대 2명 명심하자..
+# 한번에 "최대 2명". 무게 제한
+# [70, 50, 80, 50] limit 100일 때 (50+50) 같이 탈 수 있고, 나머지 2명은 따로
+# 최대한 적은 수의 보트 사용해 모두를 구출하라
+# 최대한 꽉 채워 사용
+# 최대 2명 제한이 아니면, 5 20 35 60 80 -> (5,35,60), (20,80)
+# 최대 2명 제한 -> min + max. 안되면 max만 태워보냄
 from collections import deque
-
 def solution(people, limit):
-    answer = 0
-    people = deque(sorted(people, reverse = True))
-    
-    while len(people) > 1:
-        if people[0] + people[-1] <= limit: # 최댓값과 최솟값 묶어서 보트태움
-            answer += 1
-            people.pop()    #최소 빼내고
-            people.popleft()    #최대 빼내고
-        else:
-            answer += 1 # 최댓값. 1명만 태우기
-            people.popleft()
-            
-    if people:  #people에 1명 남아있는 경우 처리
-        answer += 1
-                
+    size = len(people)
+    people.sort()
+    que = deque(people)
+    answer = size # 쌍의 수
+    while que:
+        M = que.pop()
+        if que and M + que[0] <= limit: # 쌍 만들 수 있을 때
+            que.popleft()
+            answer -= 1
     return answer
 
 # 투 포인터
