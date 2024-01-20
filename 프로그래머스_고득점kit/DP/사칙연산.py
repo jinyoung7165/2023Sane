@@ -78,8 +78,8 @@ def solution(arr):
         min_dp[i][i] = arr[i*2+1]
         max_dp[i][i] = arr[i*2+1]
     for gap in range(1, n): # 일렬의 숫자 배열 ->간격 1~n로 조정
-        for left in range(n-gap): # 맨 뒷의 숫자부터 보자
-            right = left + gap # gap=1->left=n-2, right=n-1
+        for left in range(n-gap): # 0부터 구간의 시작으로 잡을 것. 구간 크기 gap. 구간 내 k를 기준으로다시 구간을 나누고, 합침
+            right = left + gap # gap=1->left=0~n-2, right=1~n-1 까지 순회
             for k in range(left, right): # 해당 범위 내 원소 idx
                 if arr[k*2+1] == '+':# 해당 범위의 연산자
                     max_dp[left][right] = max(max_dp[left][right], max_dp[left][k]+max_dp[k+1][right])
