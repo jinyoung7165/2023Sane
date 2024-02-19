@@ -19,4 +19,22 @@ dfs(0, 0)
 for an in answer:
     print(an)
     
-    
+'''
+7명의 키 합이 100
+9명 키 주어질 때, 7명 찾아서 키 오름차순으로 출력
+'''
+heights = []
+for _ in range(9): heights.append(int(input()))
+heights.sort()
+s = sum(heights)
+l, r = 0, 8
+while l < r:
+    if s - heights[l] - heights[r] < 100:
+        r -= 1
+    elif s - heights[l] - heights[r] > 100:
+        l += 1
+    else:
+        heights.pop(l)
+        heights.pop(r-1)
+        break
+for h in heights: print(h)
