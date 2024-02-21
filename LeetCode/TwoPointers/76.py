@@ -4,6 +4,7 @@ from collections import Counter
 # 최솟값/최댓값 찾는 게 아니라, 정확한 substring 찾는 거라 bs 불가
 # missing 원소가 0일 때, right-left로 substring 길이 구할 수 있고
 # 특정 원소 넘치게 찾았으면, 걔 이후, 넘치지 않게끔 찾은 원소를 시작점으로 둘 수 있음.
+# 다음 윈도우와 현재 윈도우 절대 겹치지 않아야 함 -> left +1 한번 더 해줘야 함
 def minWindow(s: str, t: str) -> str:
     if len(t) == 1:
         if t in s: return t

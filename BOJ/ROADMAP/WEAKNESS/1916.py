@@ -9,33 +9,26 @@ a=>b도시 드는 버스 비용 최소화
 '''
 import heapq
 from sys import stdin
-
 input = stdin.readline
 n = int(input())
 m = int(input())
-M = float('inf')
-visited = [M] * (n+1)
-graph = [[] for _ in range(n+1)]
+distance = [[]*(n+1) for _ in range(n+1)]
+visited = [False]*(n+1)
 for _ in range(m):
     u, v, c = map(int, input().split())
-    graph[u].append((v, c))
-
+    distance[u].append((v, c))
 start, end = map(int, input().split())
-que = [] # start->start, cost 0
-answer = 0
-heapq.heappush(que, (0, start)) # 0 비용으로 start에 도착 가능
-visited[start] = 0
 
+que = []
+heapq.heappush(que, (0, start)) # start->start 0
 while que:
     cost, cur = heapq.heappop(que)
     if cur == end:
-        answer = cost
+        print(cost)
         break
-    for node, c in graph[cur]:
-        newcost = cost + c
-        if newcost < visited[node]:
-            visited[node] = newcost
-            heapq.heappush(que, (newcost, node))
-    
-print(answer)
+    if visited[cur]: continue
+    visited[cur] = True
+    for node, c in distance[cur]:
+        if not visited[node]: # 어차피 최솟값만 뽑으므로, 방문여부만 저장함
+            heapq.heappush(que, (cost+c, node))
     
