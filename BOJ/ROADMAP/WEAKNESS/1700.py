@@ -1,41 +1,45 @@
 '''
 멀티탭 스케줄링
-사용 순서 기반으로 플러그 빼는 횟수 최소화
-3구 멀티탭. 사용 패턴 주어짐
-A->B->C->D->A->B
-D 사용 전, C 플러그 빼면 최소 제거 비용 : 1
-2구 멀티탭. 
-2 3 2 3 1 2 7
-2323 그대로 쓰다가. 3빼고, 1빼면 됨 : 2
-나중에 사용하지 않을 애, 가장 나중에 재사용할 애 뽑아야 함
+물건 종류 k개 이하.
+그 중 1개씩 중복조합해서 k번(1~100) 사용순서 주어짐
+멀티탭 구멍 개수 n개 주어짐(1~100)
+플러그를 빼는 최소 횟수
+물건 모두 다른 종류로 k번 사용 -> k개의 플러그 필요
+물건 1 종류로 k번 사용 -> 1개의 플러그 유지
+물건 2 종류로 k번 사용 ->
+  if 플러그가 1개면, 연속 같은 거 사용이 아닐 때마다 플러그 필요
+  if 플러그가 2개면, 2개의 플러그 유지
+물건 3 종류로 k번 사용 ->
+ if 플러그가 1개면, 연속 같은 거 사용이 아닐 때마다 플러그 필요
+ if 플러그가 2개면, 가장 먼 미래에 올 플러그 빼야 함
+ if 플러그가 3개면, 3개의 플러그 유지
+가장 먼 미래에 올 거를 빼자
+현재로부터 가장 먼 미래를 찾아야 하므로... n*n 돼버림
+-> 물건별 위치 나오는 모든 구해놓고, 해당 물건 쓸 때마다 pop...?
 '''
-n, k = map(int, input().split()) # 멀티탭 구멍 수, 총 사용 패턴 길이(100이하)
-record = list(map(int, input().split())) # 각 제품 이름은 1~k이하 자연수로 주어짐
+n, k = map(int, input().split())
+sequence = list(map(int, input().split()))
+if n >= k: print(0)
+else:
+    pos = [[] for _ in range(101)] # 각 물건이 올 위치 리스트
+    answer = 0
+    plug = set()
+    for i in range(k-1, -1, -1): pos[sequence[i]].append(i) # pop()하려고 각 원소가 나오는 위치 마지막부터 넣음
 
-tabs = [] # 현재 사용중
-using = 0 # 사용 중인 구멍
-answer = 0 # 뺀 횟수
-for idx, rec in enumerate(record):
-    if rec in tabs:
-        continue # 이미 사용 중
-    if using < n:
-        tabs.append(rec)
-        using += 1
-    else:
-        answer += 1 # 하나 골라서 빼야 함
-        after = record[idx+1:]
-        selected, selectedIdx = None, -1
-        for tab in tabs: # 사용 중인 것 중
-            # 나중에 필요하지 않은 원소 제거
-            if tab not in after:
-                selected = tab
-                break
-            # 가장 나중에 필요한 원소 제거
-            idx = after.index(tab)
-            if idx > selectedIdx:
-                selectedIdx = idx
-                selected = tab
-        tabs.remove(selected)
-        tabs.append(rec)
-                
-print(answer)
+    for i, seq in enumerate(sequence):
+        pos[seq].pop() # 얘가 나온 현재 위치 제거
+        if seq not in plug: # 꽂혀있는 애가 아니다
+            if len(plug) < n: plug.add(seq) # 여분 남았으면 그냥 꽂아
+            else:
+                M, rm = 0, 0 #  가장 마지막에 나올 플러그의 위치, 해당 플러그
+                for p in plug: # 꽂힌 플러그 중, 제거할 애 찾음
+                    if not pos[p]: # 다음에 안 나올 때
+                        rm = p
+                        break
+                    elif pos[p][-1] > M: # 가장 나중에 오는 친구
+                        M = pos[p][-1]
+                        rm = p
+                plug.remove(rm)
+                plug.add(seq)
+                answer += 1
+    print(answer)
