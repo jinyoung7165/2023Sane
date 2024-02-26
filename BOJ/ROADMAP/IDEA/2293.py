@@ -16,7 +16,7 @@ dp[coin] 무조건 1개 추가해야 함(coin*1) => dp[0]=1로 두면 됨
 n, k = map(int, input().split())
 coins = [int(input()) for _ in range(n)] # 동전 종류
 
-dp = [0] * (k+1) # k원 만들기 위한 경우의 수
+dp = [0] * (k+1) # 특정 coin무조건 쓸 때, k원 만들기 위한 경우의 수.
 dp[0] = 1
 
 for coin in coins:
