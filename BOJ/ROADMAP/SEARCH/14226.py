@@ -8,6 +8,7 @@
 초기 화면: 1개 존재
 S (2 ≤ S ≤ 1000) 
 visited를 한다면, (screen, clipboard)를 저장해서, 재방문하지 않도록
+작은 수 -> 큰 수 순서대로 누적 연산이 일어나지 않기 때문에, for, dp만으로는 문제를 풀 수 없고, bfs를 반드시 써야 함
 '''
 from collections import deque
 n = int(input())

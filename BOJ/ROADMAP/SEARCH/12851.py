@@ -5,27 +5,22 @@
 1초 뒤에 2*x 위치로 순간 이동 가능
 '''
 from collections import deque
-
 n, k = map(int, input().split())
-M = float('inf')
-time, answer = M, 0
-que = deque([(n, 0)]) # 숫자, 시간
-visited = dict()
+M = max(n, k) * 2
+visited = [M] * (M+1)
+visited[n] = 0
+que = deque([n]) # pos, time
+cnt = 0
 while que:
-    num, cnt = que.popleft()
-    if num < 0 or num > 100000: continue
-    if num in visited and visited[num] < cnt: continue
-    visited[num] = cnt
-    if time != M: # 답이 나옴
-        if num == k: answer += 1
+    pos = que.popleft()
+    if visited[pos] > visited[k]: break
+    if pos == k:
+        cnt += 1
         continue
-    if num == k:
-        time = cnt
-        answer += 1
-        continue
-    que.append((num*2, cnt+1))
-    que.append((num+1, cnt+1))
-    que.append((num-1, cnt+1))
-
-print(time)
-print(answer)
+    for node in (pos*2, pos-1, pos+1):
+        if node < 0 or node > M: continue
+        if visited[node] >= visited[pos]+1:
+            visited[node] = visited[pos]+1
+            que.append(node)
+print(visited[k])
+print(cnt)

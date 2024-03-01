@@ -8,21 +8,17 @@ A->B
 2-> (*2)4 -> (*2)8 -> 81(+1) -> (*2)162
 '''
 a, b = map(int, input().split())
-answer = float('inf')
-visited = set()
+candidate = [(a*2, 1), (10*a+1, 1)]
+while candidate:
+    a, t = candidate.pop()
+    if a == b:
+        print(t+1)
+        break
+    elif a > b: continue
+    candidate.append((a*2, t+1))
+    candidate.append((10*a+1, t+1))
 
-def dfs(num, cnt):
-    global answer
-    if num == b:
-        answer = min(answer, cnt)
-        return
-    if num > b or num in visited: return
-    visited.add(num)
-    dfs(num*2, cnt+1)
-    dfs(int(str(num) + '1'), cnt+1)
-dfs(a, 1)
-print(answer if answer!=float('inf') else -1)
-
+else: print(-1)
 ''' 간단한 수학이란다...
 while a < b:
 	cnt += 1

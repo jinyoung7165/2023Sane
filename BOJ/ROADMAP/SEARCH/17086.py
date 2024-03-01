@@ -24,32 +24,26 @@ n*m 크기 공간에 상어 여러 마리
 '''
 from sys import stdin
 from collections import deque
-
 input = stdin.readline
+dirs = [(0,1),(1,0),(0,-1),(-1,0),
+        (1,1),(1,-1),(-1,1),(-1,-1)]
 
 n, m = map(int, input().split())
+board = [list(input().split()) for _ in range(n)]
 que = deque([])
-board = []
-answer = 0
-dirs = [(0,1),(1,0),(0,-1),(-1,0),(1,1),(-1,-1),(1,-1),(-1,1)]
 for i in range(n):
-    row = list(map(int, input().split()))
     for j in range(m):
-        if row[j] == 1:
-            que.append((i, j, 2)) # 다음 칸, 누적 거리 + 1
-    board.append(row)
-    
+        if board[i][j] == '1':
+            que.append((i, j))
+            board[i][j] = 0
+
+answer = 0
 while que:
-    x, y, cnt = que.popleft()
+    x, y = que.popleft()
+    if board[x][y] > answer: answer = board[x][y]
     for dx, dy in dirs:
         nx, ny = x+dx, y+dy
-        if 0<=nx<n and 0<=ny<m and (board[nx][ny] == 0 or board[nx][ny] > cnt):
-            board[nx][ny] = cnt
-            que.append((nx, ny, cnt+1))
-            
-for i in range(n):
-    for j in range(m):
-        if board[i][j] > answer:
-            answer = board[i][j]
-
-print(answer-1)
+        if 0<=nx<n and 0<=ny<m and board[nx][ny] == '0':
+            board[nx][ny] = board[x][y] + 1
+            que.append((nx, ny))
+print(answer)
