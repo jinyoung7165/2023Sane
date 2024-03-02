@@ -1,29 +1,24 @@
+# 퇴사 2
 '''
-퇴사 2
-n일 동안 최대한 많은 수익을 얻게끔 참여
-[[소요 시간, 수익]] 주어짐
-i번째 원소 사용한다고 하면, i+소요시간 부터 다음 이용 가능
-i 순회하며 dp[i+day] = max(dp[i+day], dp[i]+cost)
-이전에 수행한 일끼리 비교
-만약 [[2, 100], [2, 300]...] 주어지면
-idx 5에 100기록, 3에 20 기록 가능하지만, 두 일 모두를 누적해서 사용해야 함
-dp[i+day] = "i일 이전까지 나온 누적 최대" + i일에 주어진 cost
-오늘 일 하되, 이전에 나온 누적 최대를 저장해놔야 함(dp[오늘]아님)
+n일 동안 조합해 "최대의 금액"
+t동안 p얻을 수 있음
+i일에 t기간-> i+t 부턴 가능. i+t-1까지는 선택 불가
+i+t > n이면 불가능
+dp[i]: i시간까지의 최대 수익
+원소 1순회하며, dp[i+t-1]에 dp[i-1] + p를 전달
 '''
-
 from sys import stdin
-
 input = stdin.readline
-
 n = int(input())
-day_cost = [list(map(int, input().split())) for _ in range(n)]
-# 정렬 필요한 것도 아니고 그냥 day, cost 배열 나눠서 받는 게 훨씬 빠름
-lastmax = 0 # 이전에 나온 누적일 중 최대
-dp = [0] * (n+1) # n-1(마지막)일에 1일치 일 하면 n에 기록해야 함
-for i in range(n):
-    lastmax = max(dp[i], lastmax) # 현재까지의 누적 최댓값
-    day, cost = day_cost[i]
-    if day + i > n: continue
-    dp[i+day] = max(dp[i+day], lastmax + cost)
+time, pay = [], []
+for _ in range(n):
+    t, p = map(int, input().split())
+    time.append(t) # n범위 몹시 크고, 정렬이 필요 없기 때문에 다른 배열로 입력받는 게 낫다
+    pay.append(p)
+dp = [0] * (n+1) # 각 숫자 1로만 이뤄진 경우 오직 1개
 
-print(max(dp[n], lastmax))
+for i in range(n):
+    t, p = time[i], pay[i]
+    if i + t <= n: dp[i+t-1] = max(dp[i+t-1], dp[i-1]+p)
+    dp[i+1] = max(dp[i+1], dp[i]) # 특정 기간 동안 원소를 선택하지 않는대도, 최대 누적값은 계속 유지돼야 함
+print(dp[n])

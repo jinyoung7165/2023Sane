@@ -34,25 +34,27 @@ a -= 1
 b -= 1
 c -= 1
 d -= 1
-visited = [[float('inf')]*m for _ in range(n)]
-que = deque([(a, b)])
-visited[a][b] = 0
-while que:
-    x, y = que.popleft()
-    if x == c and y == d:
-        print(visited[c][d])
-        break
-    for dx, dy in dirs:
-        nx, ny = x+dx, y+dy
-        for _ in range(k): # 현재 위치에서 출발해 k칸 이동하며 거리 갱신할 것
-            if 0<=nx<n and 0<=ny<m and board[nx][ny] == '.': # 이동 가능한 칸
-                if visited[nx][ny] >= visited[x][y] + 1: # 같은 시간대 내에 이미 방문할 수 있었던 칸도 포함(쭉 가다보면, 방문하지 않은 칸 존재 가능)
+
+def bfs(a, b):
+    que = deque([(a, b)])
+    visited = [[float('inf')]*m for _ in range(n)]
+    visited[a][b] = 0
+    while que:
+        x, y = que.popleft()
+        if x == c and y == d:
+            print(visited[c][d])
+            break
+        for dx, dy in dirs:
+            nx, ny = x+dx, y+dy
+            for _ in range(k): # 현재 위치에서 출발해 k칸 이동하며 거리 갱신할 것
+                if 0<=nx<n and 0<=ny<m and board[nx][ny] == '.' and visited[nx][ny] > visited[x][y]: # 이동 가능한 칸
+                    # visited[nx][ny] == visted[x][y]+1 같은 시간대 내에 이미 방문한 칸도 포함(쭉 가다보면, 방문하지 않은 칸 존재 가능)
                     if visited[nx][ny] == float('inf'): # 첫 방문 시, 최단 시간 que에 넣음
                         que.append((nx, ny))
                         visited[nx][ny] = visited[x][y]+1
                     nx += dx
                     ny += dy
-                else: break # 최단 경로가 아님 -> 다음 노드로 도달하는 이미 기록된 최단 경로를 쓰는 게 나음
-            else: break # 막혀서 같은 방향으로는 더 못 감
-
-else: print(-1)
+                else: break # 막혀서 같은 방향으로는 더 못 감      
+    else: print(-1)
+    
+bfs(a, b)
