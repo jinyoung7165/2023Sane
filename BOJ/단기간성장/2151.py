@@ -1,80 +1,71 @@
 # 거울 설치
-# 설치 가능한 곳 여러 개
-# 문 2개-> 한쪽에서 다른 문 비추도록 거울 설치
-# 설치해야 하는 거울의 최소 개수
-# 45도 기울어진 대각 방향으로 설치
-# 모든 거울 양면 -> 모두 반사
-# #: 문, .: 빈칸, !: 거울 설치 가능한 곳, *: 벽
-# 거울 개수 기준 탐색 필요
-# 문에서 빛 사방팔방으로 나올 수 있고 거울 설치해 방향 전환 가능
-# 이동수는 중요하지 않음. 도착까지 몇 번이나 방향 바꿔야 하는지
-# 둘러와도, 방향만 적게 바꾸면 되는 것
+'''
+최소 거울 수 구함 -> 엄청 많이 돌아와도 거울 수만 최소면 됨 -> heapq
+양면 거울 설치할 수 있는 위치들 정해져 있음. 설치 or not
+# -> # 연결
+* 벽
+. 직진
+! 직진 or 양면 거울 설치해 반사(방향 90 전환)
+visited에 해당 위치를 d방향으로 도달하기 위한 최소 거울 수 저장
+
+# # # # #
+# S . . #
+# . # . #
+# . . E #
+# # # # #
+
+s에서 오른=>밑 방향으로 E에 도착하는 것과, 밑=>오른 방향으로 E에 도착할 때 
+최소 거울 수 다름. 어떤 방향을 먼저 선택했는지 상관 있음 => 3차원 visited 배열 필요
+'''
 # 이동 중, 알고보니 방향 바꿔야 했음을 어떻게 아는가? -DFS 대신, 
 # 일단 사방으로 움직이며 기록하고, 이전 방향과 달라지면 거울을 설치한 것이다
-import heapq
 from sys import stdin
-
-dirs = {0: (0, 1), 1: (0, -1), 2: (1, 0), 3: (-1, 0)}
+import heapq
 input = stdin.readline
+dirs = [(0,1),(1,0),(0,-1),(-1,0)]
 n = int(input())
-answer = 0
+board = [input().rstrip() for _ in range(n)]
 M = float('inf')
-board, que = [], []
-start = (0, 0)
-visited = [[[M for _ in range(4)] for _ in range(n)] for _ in range(n)]
+def bfs(x, y):
+    que = []
+    visited = [[[M,M,M,M] for _ in range(n)] for _ in range(n)]
+    for i in range(4):
+        heapq.heappush(que, (0, x, y, i))
+        visited[x][y][i] = 0
+    
+    while que:
+        cnt, cx, cy, d = heapq.heappop(que) # 거울 수, i, j, dir
+        if board[cx][cy] == '#' and (cx, cy) != (x, y):
+            return cnt
+        for nd in range(4):
+            nx, ny = cx+dirs[nd][0], cy+dirs[nd][1]
+            if 0<=nx<n and 0<=ny<n and board[nx][ny] != '*' and visited[nx][ny][nd] > cnt:
+                if d == nd:
+                    visited[nx][ny][d] = cnt
+                    heapq.heappush(que, (cnt, nx, ny, d))
+                elif board[cx][cy] == '!' and visited[nx][ny][nd] > cnt+1:
+                    visited[nx][ny][nd] = cnt+1
+                    heapq.heappush(que, (cnt+1, nx, ny, nd))
 
 for i in range(n):
-    row = input()
-    board.append(row)
-    idx = row.find('#')
-    if idx != -1 and not que:
-        for d in range(4):
-            heapq.heappush(que, (0, i, idx, d))
-            visited[i][idx][d] = 0
-        start = (i, idx)
-
-while que:
-    cnt, x, y, d = heapq.heappop(que)
-    if board[x][y] == '#' and (x, y) != start:
-        answer = cnt
+    j = board[i].find('#')
+    if j != -1:
+        print(bfs(i, j))
         break
-    for i, dir in dirs.items():
-        dx, dy = dir
-        nx, ny = x + dx, y + dy
-        if 0 <= nx < n and 0 <= ny < n and board[nx][ny] != '*':
-            if i == d:
-                if visited[nx][ny][d] > cnt:
-                    visited[nx][ny][d] = cnt
-                    heapq.heappush(que, (cnt, nx, ny, i))
-            elif board[x][y] == '!':
-                if visited[nx][ny][i] > cnt + 1:
-                    visited[nx][ny][i] = cnt + 1
-                    heapq.heappush(que, (cnt + 1, nx, ny, i))
-print(answer)
 
 # visited 배열의 크기를 바꾸어 방향도 고려할 수 있게 된 것입니다.
 # 각 위치와 방향에 대해 최소 거울 수를 저장함으로써 정확한 결과를 얻을 수 있습니다.
-''' 4가 정답인데, 7이 나오는 문제
-20
-#.....!.!...........
-******.*.***********
-*!....!*.***********
-*.****.*.***********
-*.**!.!*.***********
-*.**.***.***********
-*.**!.!*.***********
-*.****.*.***********
-*.**!.!*.***********
-*.**.***.***********
-*!..!.......#*******
-********.***.*******
-********.***.*******
-********.***.*******
-********.***.*******
-********.*!.!*******
-********.*.*********
-********.*!.!*******
-********.***.*******
-********!...!*******
+'''
+for i in (0,1,3): # 반대 방향으로 가는 거 굳이 코드로 거르고 싶다면. range(4) 대신
+    nd = (d+i)%4
+    nx, ny = cx+dirs[nd][0], cy+dirs[nd][1]
+    if 0<=nx<n and 0<=ny<n and board[nx][ny] != '*' and visited[nx][ny][nd] > cnt:
+        if i == 0:
+            visited[nx][ny][d] = cnt
+            heapq.heappush(que, (cnt, nx, ny, d))
+        elif visited[nx][ny][nd] > cnt+1:
+            visited[nx][ny][nd] = cnt+1
+            heapq.heappush(que, (cnt+1, nx, ny, nd))
+    if board[cx][cy] != '!': break
 
 '''
