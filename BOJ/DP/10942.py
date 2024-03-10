@@ -1,27 +1,28 @@
 # 팰린드롬?
+'''
+n개 숫자 적고, 질문 총 m번
+s~e번째 수(1~n)까지가 팰린드롬인지 -> 1/0
+1213121
+범위 계속 바꿔가며 질문 -> 미리 다 구해놓자
+gap=0~n-1 * n만큼
+'''
 from sys import stdin
-
 input = stdin.readline
-
 n = int(input())
-li = list(map(int, input().split()))
-m = int(input())
-dp = [[0]*(n+1)for _ in range(n+1)]
-for i in range(1, n+1):
-  dp[i][i] = 1
-  if i < n and li[i-1] == li[i]:
-    dp[i][i+1] = 1
-# 1 2 3 gap=2
-# dp[2][2] 1+2//2
-# 1 2 3 4 gap=2
-# dp[2][3] 1+1    
+nums = list(map(int, input().split()))
+
+dp = [[0]*n for _ in range(n)] # (i,j) i번째에서 시작할 때, j까지 팰린드롬인지
+
+for i in range(n):
+    dp[i][i] = 1
+    if i == n-1: break
+    if nums[i] == nums[i+1]: dp[i][i+1] = 1
+
 for gap in range(2, n):
-  for i in range(1, n-gap+1):
-    j = i+gap
-    if li[i-1] == li[j-1]: # 양 끝 수가 같음
-        #  (i+1~i+1+(gap-2))
-        if dp[i+1][j-1] == 1:
-            dp[i][j] = 1
-for _ in range(m):
-  s, e = map(int, input().split())
-  print(dp[s][e])
+    for i in range(n-gap):
+        if nums[i] == nums[i+gap] and dp[i+1][i+gap-1]:
+            dp[i][i+gap] = 1
+
+for _ in range(int(input())): # 질문 수 엄청 많음 -> 따로 저장x
+    s, e = map(int, input().split())
+    print(dp[s-1][e-1])
