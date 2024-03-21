@@ -53,7 +53,7 @@ for _ in range(tc):
         for i in range(k-gap): # gap1일 때 0~k-2을 출발점으로. gap=k-1일 때 0출발점
             j = i+gap
             result = M
-            for mid in range(i, j):
+            for mid in range(i, j): # mid는 i+gap 끝 점 포함하지 않음 중요!!!!
                 # (gap1)j=i+1일 때, mid=i일 경우 1번. dp[i][i]=dp[i+1][i+1]=0, sum(i~i+1)=n[i]+n[i+1]
                 result = min(result, dp[i][mid]+dp[mid+1][j])
             dp[i][j] = result + (seq_sum[j]-seq_sum[i-1])

@@ -42,7 +42,7 @@ for gap in range(1, n): # n-1 종류의 묶기. gap:1~n-1로 넓혀갈 것
     for i in range(n-gap): # n-gap회 실행. n4, gap1일 때 3회 실행
         j = i+gap
         result = M
-        for k in range(i, j): # 이 범위 내에서 다시 조합
+        for k in range(i, j): # k를 기준으로 조합. i~k이미 계산됨 -> [i~k] * [k+1~j]
             result = min(result, dp[i][k] + dp[k+1][j] + li[i][0]*li[k][1]*li[j][1])
         dp[i][j] = result
 print(dp[0][n-1])
