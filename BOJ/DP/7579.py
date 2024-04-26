@@ -31,3 +31,27 @@ for i in range(1, n+1):
         if dp[i][j] >= m: # m이상의 메모리 확보 시
             answer = min(answer, j)
 print(answer)
+
+from sys import stdin
+
+input = stdin.readline
+
+n, M = map(int, input().split())
+using = list(map(int, input().split())) # 사용 중인 n개의 메모리
+costs = list(map(int, input().split())) # 비활성화 시 비용
+# m 이상을 확보하기 위해 필요한 최소 c?
+answer = float('inf')
+s = sum(costs)+1
+dp = [[0]*s for _ in range(n+1)] # i원소까지 봤을 때, c로 만들 수 있는 최대 M
+# dp[i][c+k] = dp[i-1][c+k], m+dp[i-1][k]
+for i in range(n):
+    m, c = using[i], costs[i]
+    for j in range(c): # coin 더하지 않은 결과 누적
+        dp[i][j] = dp[i-1][j]
+    for j in range(s-c): # coin과 j 더한 결과 누적
+        dp[i][c+j] = max(dp[i-1][c+j], m+dp[i-1][j])
+        
+for i in range(s):
+    if dp[n-1][i] >= M:
+        print(i)
+        break
