@@ -1,0 +1,45 @@
+-- 그룹별 조건에 맞는 식당 목록 출력하기 (가장 많이 리뷰를 남긴 사람의 리뷰들 출력)
+SELECT MEMBER_NAME, REVIEW_TEXT, DATE_FORMAT(REVIEW_DATE, '%Y-%m-%d') REVIEW_DATE
+FROM MEMBER_PROFILE
+    INNER JOIN REST_REVIEW 
+    ON MEMBER_PROFILE.MEMBER_ID=REST_REVIEW.MEMBER_ID
+where MEMBER_PROFILE.MEMBER_ID=
+    (SELECT MEMBER_ID
+    FROM REST_REVIEW GROUP BY MEMBER_ID
+    ORDER BY COUNT(*) DESC LIMIT 1)
+ORDER BY REVIEW_DATE, REVIEW_TEXT
+
+-- a에는 있지만, b에는 없는 애들 출력 left outer join
+SELECT A.ANIMAL_ID,A.NAME
+FROM ANIMAL_OUTS A
+    LEFT OUTER JOIN ANIMAL_INS B
+    ON A.ANIMAL_ID=B.ANIMAL_ID
+WHERE B.ANIMAL_ID IS NULL
+
+--상품을 구매한 회원 비율 구하기 !!!!!!!!!!!!!!!!!!!!!!!!! 중요
+-- 구매 회원수/가입 회원수
+/* USER_INFO 2021 가입한 USER_ID들 중,
+이후(2021~2022) YEAR, MONTH별로 몇 명(DISTINCT)이 ONLINE_SALE 구매하는지 비율
+*/
+SELECT YEAR(SALES_DATE) YEAR,
+    MONTH(SALES_DATE) MONTH,
+    COUNT(DISTINCT ONLINE_SALE.user_id) PURCHASED_USERS, -- 연월별 구매유저 수
+    ROUND(COUNT(DISTINCT ONLINE_SALE.user_id)/(SELECT COUNT(*) FROM USER_INFO WHERE YEAR(JOINED) = 2021), 1) PUCHASED_RATIO -- 2021 전체 가입자수
+FROM ONLINE_SALE 
+    INNER JOIN USER_INFO -- 2021년에 가입한 사람들의 구매내역만 보기 위함
+        ON USER_INFO.user_id = ONLINE_SALE.user_id
+        WHERE YEAR(JOINED) = 2021
+GROUP BY YEAR, MONTH
+ORDER BY YEAR, MONTH
+
+-- FrontEnd 개발자 찾기.. 일단 SELECT FROM WHERE 까지만 쓰고 JOIN은 나중에 생각하자!!!!
+-- 개발자의 SKILL_CODE 1010, 모든 프론트엔드 CODE의 SUM을 0101이라고 할 때, 각 비트 비교해서
+-- 하나의 위치(하나의 비트)라도 똑같아야 함 -> &(비트 단위 연산) 연산 시, 위치 같은 비트에 둘 다 1이면 1반환
+-- | 연산의 경우, 두 코드 중 하나만 1이 있는 경우도 1로 만들어버리기 때문에 비교 불가
+SELECT ID,EMAIL,FIRST_NAME,LAST_NAME
+FROM DEVELOPERS
+WHERE SKILL_CODE & (
+    SELECT SUM(CODE) FROM SKILLCODES
+    WHERE CATEGORY = 'Front End'
+) > 0
+ORDER BY ID
