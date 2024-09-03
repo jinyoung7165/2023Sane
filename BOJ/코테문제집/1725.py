@@ -26,4 +26,5 @@ for idx in range(1, n+1):
         marea = max(marea, h*(idx-start))
     # 높이 같거나, 커지는 경우, 시작 idx와 height 저장
     stack.append((start, height))
+    # start를 갱신하는 이유: 1 5 5 4 의 경우, 4는 자기 위치에서 시작하는 게 아닌, [1]부터 시작하기 때문에
 print(marea)

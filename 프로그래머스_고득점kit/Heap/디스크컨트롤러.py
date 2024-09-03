@@ -8,49 +8,29 @@
 # 작업을 수행중이 아니면 순차적으로
 import heapq
 def solution(jobs):
-    answer, now, i = 0, 0, 0
-    start = -1 
-    heap = []
-    
-    while i < len(jobs):
-        # 현재 시점에서 처리할 수 있는 작업을 heap에 저장
-        for j in jobs:
-            if start < j[0] <= now:
-                heapq.heappush(heap, [j[1], j[0]])
-        
-        if len(heap) > 0: # 처리할 작업이 있는 경우
-            cur = heapq.heappop(heap)
-            start = now
-            now += cur[0]
-            answer += now - cur[1] # 작업 요청시간부터 종료시간까지의 시간 계산
-            i +=1
-        else: # 처리할 작업이 없는 경우 다음 시간을 넘어감
-            now += 1
-                
-    return answer // len(jobs)
-
-
-import heapq
-from collections import deque
-def solution(jobs):
-    que = []
-    length = len(jobs)
-    job_que = deque(sorted([(x[1], x[0]) for x in jobs], key=lambda x: (x[1], x[0])))
-    # 소요, 요구, 위치 바꿔 나열(heapq 넣기 위함) -> 요구, 소요 순 정렬해 deque 삽입
-    heapq.heappush(que, job_que.popleft()) # 소요, 요구 순 정렬
-    
-    now = 0 # 현재 시간
-    total = 0 # 총 대기 시간
-    
-    while que: # 실행 큐
-        dur, req = heapq.heappop(que)
-        now = max(dur+now, dur+req) # 현재 시간 이전에 요청(겹침) or 이후 요청(겹치지 않는 작업일 때)
-        total += now - req
-        while job_que and job_que[0][1] <= now: # 이전에 요청된 거면 실행
-            heapq.heappush(que, job_que.popleft())
-        if not que and job_que: # 실행 큐 비었는데 대기열에 존재 시(현재 시간 이후 요청 -> now = req+dur)
-            heapq.heappush(que, job_que.popleft())
-    return total // length
+    wait = [] # 우선순위대로 정렬된 후, 실행될 큐
+    size = len(jobs)
+    jobs.sort(reverse=True) # 먼저 온 요청 순서대로 sort(pop하려고 거꾸로 둠)
+    now = 0 # 앞 작업 끝나는 시간
+    total = 0
+    req, need = jobs.pop()
+    heapq.heappush(wait, (need, req)) # 아무것도 없을 때 그냥 실행할 것
+    while wait:
+        need, req = heapq.heappop(wait) # 우선순위 제일 높은 거 실행
+        if now <= req: # 기다렸다가 실행
+            total += need
+            now = req + need
+        else: # 밀린 작업. 바로 실행
+            total += now-req + need
+            now += need
+        while jobs and now >= jobs[-1][0]: # 밀린 애들 -> 우선순위 정렬
+            req, need = jobs.pop()
+            heapq.heappush(wait, (need, req))
+        # 밀린 애들 없는데, wait도 없으면, 남은 jobs 중에서 가져와서 바로 실행해야 함
+        if not wait and jobs:
+            req, need = jobs.pop()
+            heapq.heappush(wait, (need, req))
+    return total // size
 
 import heapq
 from collections import deque

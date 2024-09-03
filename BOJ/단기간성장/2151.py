@@ -37,13 +37,13 @@ def bfs(x, y):
         cnt, cx, cy, d = heapq.heappop(que) # 거울 수, i, j, dir
         if board[cx][cy] == '#' and (cx, cy) != (x, y):
             return cnt
-        for nd in range(4):
+        for nd in range(4): # 반대 방향의 경우, cnt+1로 증가하기 때문에 필터링 됨
             nx, ny = cx+dirs[nd][0], cy+dirs[nd][1]
             if 0<=nx<n and 0<=ny<n and board[nx][ny] != '*' and visited[nx][ny][nd] > cnt:
-                if d == nd:
+                if d == nd: # cnt보다 큰 경우에만 갱신
                     visited[nx][ny][d] = cnt
                     heapq.heappush(que, (cnt, nx, ny, d))
-                elif board[cx][cy] == '!' and visited[nx][ny][nd] > cnt+1:
+                elif board[cx][cy] == '!' and visited[nx][ny][nd] > cnt+1: # cnt+1보다 큰 경우에만 갱신
                     visited[nx][ny][nd] = cnt+1
                     heapq.heappush(que, (cnt+1, nx, ny, nd))
 
